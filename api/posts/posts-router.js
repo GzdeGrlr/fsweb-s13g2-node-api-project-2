@@ -72,6 +72,11 @@ router.put("/:id", async (req, res) => {
             return PostModel.findById(id);
           }
         );
+
+        //await Post.update(req.params.id,post)
+        //const updatedPost = PostModel.findById(req.params.id)
+        //res.json(updatedPost)
+
         res.status(200).json(updatedPost);
       }
     }
