@@ -41,6 +41,9 @@ router.post("/", (req, res) => {
       .json({ message: "Lütfen gönderi için bir title ve contents sağlayın" });
   } else {
     PostModel.insert(post)
+      .then(({ id }) => {
+        return PostModel.findById(id);
+      })
       .then((createdPost) => {
         res.status(201).json(createdPost);
       })
@@ -64,7 +67,11 @@ router.put("/:id", async (req, res) => {
           .status(400)
           .json({ message: "Lütfen gönderi için title ve contents sağlayın" });
       } else {
-        const updatedPost = await PostModel.update(req.params.id, post);
+        const updatedPost = await PostModel.update(req.params.id, post).then(
+          (id) => {
+            return PostModel.findById(id);
+          }
+        );
         res.status(200).json(updatedPost);
       }
     }
@@ -79,8 +86,8 @@ router.delete("/:id", async (req, res) => {
     if (!relatedPost) {
       res.status(404).json({ message: "Belirtilen ID li gönderi bulunamadı" });
     } else {
-      const deletedPost = await PostModel.remove(req.params.id);
-      res.status(200).json(deletedPost);
+      await PostModel.remove(req.params.id);
+      res.status(200).json(relatedPost);
     }
   } catch (err) {
     res.status(500).json({ message: "Gönderi silinemedi" });
